@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>hCaptcha Test Lab</title>
+
+  <script
+    src="https://js.hcaptcha.com/1/api.js"
+    async
+    defer>
+  </script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #050505;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      width: min(700px, calc(100% - 32px));
+      padding: 28px;
+      border: 1px solid #333;
+      background: #0b0b0b;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 22px;
+    }
+
+    .captcha {
+      margin: 24px 0;
+    }
+
+    button {
+      padding: 10px 16px;
+      background: #fff;
+      color: #000;
+      border: 0;
+      cursor: pointer;
+    }
+
+    #log {
+      margin-top: 24px;
+      padding: 12px;
+      height: 220px;
+      overflow-y: auto;
+      background: #000;
+      border: 1px solid #222;
+      font-family: monospace;
+      font-size: 13px;
+      white-space: pre-wrap;
+    }
+
+    .success {
+      color: #7cff7c;
+    }
+
+    .error {
+      color: #ff7070;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="container">
+    <h1>hCaptcha Test Lab</h1>
+
+    <p>
+      Halaman lokal untuk menguji lifecycle hCaptcha.
+    </p>
+
+    <div
+      class="h-captcha captcha"
+      data-sitekey="41d7d520-ff17-4d43-bdb5-f271913f8998"
+      data-callback="captchaSuccess"
+      data-expired-callback="captchaExpired"
+      data-error-callback="captchaError">
+    </div>
+
+    <button type="button" onclick="resetCaptcha()">
+      Reset CAPTCHA
+    </button>
+
+    <div id="log"></div>
+  </main>
+
+  <script>
+    const logElement = document.getElementById("log");
+
+    function log(message, type = "") {
+      const time = new Date().toLocaleTimeString();
+
+      const line = document.createElement("div");
+      line.textContent = `[${time}] ${message}`;
+
+      if (type) {
+        line.className = type;
+      }
+
+      logElement.appendChild(line);
+      logElement.scrollTop = logElement.scrollHeight;
+
+      console.log(`[hCaptcha Test] ${message}`);
+    }
+
+    function captchaSuccess(token) {
+      log("CAPTCHA solved successfully", "success");
+
+      // Jangan mencetak token CAPTCHA ke log.
+      log(`Token received: ${token ? "YES" : "NO"}`, "success");
+    }
+
+    function captchaExpired() {
+      log("CAPTCHA token expired", "error");
+    }
+
+    function captchaError(error) {
+      log(
+        `CAPTCHA error: ${error || "unknown error"}`,
+        "error"
+      );
+    }
+
+    function resetCaptcha() {
+      if (typeof hcaptcha === "undefined") {
+        log("hCaptcha API belum tersedia", "error");
+        return;
+      }
+
+      hcaptcha.reset();
+      log("CAPTCHA widget reset");
+    }
+
+    window.addEventListener("load", () => {
+      log("Page loaded");
+      log("Waiting for hCaptcha...");
+    });
+  </script>
+
+</body>
+</html>
+
